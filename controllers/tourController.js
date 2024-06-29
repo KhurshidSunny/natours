@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+// eslint-disable-next-line import/no-useless-path-segments
 const Tour = require('./../models/tourModel');
 
 exports.getAllTours = (req, res) => {
