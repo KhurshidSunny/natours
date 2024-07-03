@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line import/no-useless-path-segments
-const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 
 exports.aliasTopTours = (req, res, next) => {
