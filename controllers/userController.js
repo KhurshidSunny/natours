@@ -1,10 +1,19 @@
 /* eslint-disable prettier/prettier */
-exports.getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'The is route is not implemented yet',
+/* eslint-disable import/no-useless-path-segments */
+/* eslint-disable prettier/prettier */
+const catchAsync = require('../utils/catchAsync');
+const User = require('./../models/userModel');
+
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
+
+  res.status(400).json({
+    status: 'success',
+    data: {
+      users,
+    },
   });
-};
+});
 
 exports.getUser = (req, res) => {
   res.status(500).json({
