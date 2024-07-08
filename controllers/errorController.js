@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable prettier/prettier */
 /* eslint-disable node/no-unsupported-features/es-syntax */
 /* eslint-disable prettier/prettier */
@@ -23,6 +24,11 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = (err) => {
+  console.log(err);
+  return new AppError('invalid token. Please login again', 401);
+};
+
 const sendErrorDev = (res, err) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -42,11 +48,10 @@ const sendErrorProd = (err, res) => {
   }
   // Programming or other unknown error: don't leak error details
   else {
-    // console.log('Error ', err);
+    console.log('Error ', err);
     res.status(500).json({
       status: 'error',
-      // message: 'Something went very wrong!',
-      message: err,
+      message: 'Something went very wrong!',
     });
   }
 };
@@ -62,6 +67,9 @@ module.exports = (err, req, res, next) => {
     if (err.code === 11000) err = handleDuplicateFieldsDB(err);
     if (err.errors.name.name === 'ValidatorError')
       err = handleValidationErrorDB(err);
+
+    if (err.name) err = handleJWTError(err);
+
     sendErrorProd(err, res);
   }
 };
