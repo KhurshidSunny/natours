@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable radix */
 /* eslint-disable prettier/prettier */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -21,6 +22,11 @@ const userSchema = new mongoose.Schema({
   },
 
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
 
   password: {
     type: String,
