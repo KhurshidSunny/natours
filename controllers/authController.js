@@ -24,7 +24,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    changedPasswordAt: req.body.changedPasswordAt,
+    role: req.body.role,
   });
 
   const token = signToken(newUser._id);
@@ -79,7 +79,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 2. verification token
 
-  const decode = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
 
   // 3. Check if the user exist
   const currentUser = await User.findById(decode.id);
@@ -103,3 +103,20 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles ['admin', 'lead-guide']
+
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          'you do not have the permission to perform this action',
+          403,
+        ),
+      );
+    }
+
+    next();
+  };
+};
