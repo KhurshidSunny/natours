@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable prettier/prettier */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable prettier/prettier */
@@ -36,6 +37,8 @@ const userSchema = new mongoose.Schema({
       message: 'The passwords are not same',
     },
   },
+
+  changedPasswordAt: Date,
 });
 
 // encrypt the password (middleware)
@@ -56,6 +59,17 @@ userSchema.methods.correctPassword = async function (
   userpassword,
 ) {
   return await bcrypt.compare(candidatepassword, userpassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.changedPasswordAt) {
+    const changedTimeStap = parseInt(this.changedPasswordAt.getTime() / 1000);
+
+    return JWTTimestamp < changedTimeStap;
+  }
+
+  // FALSE MEANS NOT PASSWORD NOT CHANGED
+  return false;
 };
 
 // MODEL

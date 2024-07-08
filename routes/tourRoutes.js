@@ -1,5 +1,8 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable import/no-useless-path-segments */
+/* eslint-disable prettier/prettier */
 const express = require('express');
+const authController = require('./../controllers/authController');
 
 const router = express.Router();
 const tourController = require('../controllers/tourController');
@@ -16,7 +19,7 @@ router.route('/tour-stats').get(tourController.getTourStats);
 
 router
   .route(`/`)
-  .get(tourController.getAllTours)
+  .get(authController.protect, tourController.getAllTours)
   .post(tourController.createTour);
 router
   .route(`/:id`)
