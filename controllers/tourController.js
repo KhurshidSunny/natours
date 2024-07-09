@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line import/no-useless-path-segments
 const Tour = require('../models/tourModel');
+const User = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
