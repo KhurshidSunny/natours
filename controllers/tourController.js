@@ -56,25 +56,6 @@ exports.createTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateMe = (req, res, next) => {
-  // 1. create an error if user update password data
-  if (req.body.password || req.body.confirmPassword) {
-    return next(
-      new AppError(
-        'This route is not for password updates. please use this route  /updateMyPassword',
-      ),
-      400,
-    );
-  }
-
-  // 2. update the user data
-  // const user = await User.findById(req.user.id);
-  res.status(200).json({
-    status: 'success',
-  });
-  next();
-};
-
 exports.updateTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
