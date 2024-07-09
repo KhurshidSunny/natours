@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable arrow-body-style */
 /* eslint-disable prettier/prettier */
 /* eslint-disable import/no-useless-path-segments */
@@ -19,6 +20,18 @@ const signToken = (id) => {
   });
 };
 
+const createSendToken = function (res, user, statusCode) {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user: user,
+    },
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -28,15 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(res, newUser, 201);
 });
 
 //  LOGIN
@@ -54,11 +59,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect password or email', 401));
 
   // 3. if Everything ok, send the client a token
-  const token = signToken(user._id);
-  res.status(400).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(res, user, 400);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -160,7 +161,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
         500,
       ),
     );
-    console.log(err);
   }
 });
 exports.resetPassword = catchAsync(async (req, res, next) => {
@@ -186,12 +186,27 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
 
-  // 3. UPDATE changedPasswordAt PROPERTY FOR THE USER
+  // 3. UPDATE changedPasswordAt PROPERTY FOR THE USER (used middleware )
 
   // 4. LOG THE USER IN, SEND JWT
-  const token = signToken(user._id);
-  res.status(400).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(res, user, 200);
+});
+
+// UPDATE PASSWORD FOR THE LOGGED IN USERS
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1. Get the user from collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2. check if POSTed current password is equal
+  if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+    return next(new AppError('your current password is wrong', 401));
+  }
+  // 3. If so, update the password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  await user.save();
+
+  // 4. Log the user in, send JWT
+  createSendToken(res, user, 200);
+  next();
 });
