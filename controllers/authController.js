@@ -23,6 +23,19 @@ const signToken = (id) => {
 const createSendToken = function (res, user, statusCode) {
   const token = signToken(user._id);
 
+  // setting cookie
+  const cookieOptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  user.password = undefined;
+
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -59,7 +72,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect password or email', 401));
 
   // 3. if Everything ok, send the client a token
-  createSendToken(res, user, 400);
+  createSendToken(res, user, 200);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
