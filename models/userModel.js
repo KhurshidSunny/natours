@@ -63,11 +63,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.pre(/^find/, function (next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
-
 // encrypt the password (middleware)
 userSchema.pre('save', async function (next) {
   // if the password is not modified to prevent an already hashed password each time the doc is saved to the DB
@@ -78,6 +73,11 @@ userSchema.pre('save', async function (next) {
 
   //
   this.confirmPassword = undefined;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

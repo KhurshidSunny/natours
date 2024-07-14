@@ -1,5 +1,7 @@
+/* eslint-disable import/no-useless-path-segments */
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
+const Tour = require('../models/tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -51,6 +53,34 @@ reviewSchema.pre(/^find/, function (next) {
   });
 
   next();
+});
+
+reviewSchema.statics.calcAverageRating = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+
+  console.log(stats);
+
+  // persisted to Tour
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingAverage: stats[0].avgRating,
+    ratingQuantity: stats[0].nRating,
+  });
+};
+
+reviewSchema.post('save', function () {
+  // this points to current reveiw
+  this.constructor.calcAverageRating(this.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);

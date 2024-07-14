@@ -131,6 +131,9 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+tourSchema.index({ price: 1, ratingAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // VIRTUAL PROPERTIES
 tourSchema.virtual('durationWeek').get(function () {
   // here this points to the current docuemnt
