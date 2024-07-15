@@ -42,6 +42,8 @@ const tourSchema = new mongoose.Schema(
     ratingAverage: {
       type: Number,
       default: 4.5,
+      // round the value after the decimal
+      set: (val) => Math.round(val * 10) / 10, // round only the decimal part
     },
     ratingQuantity: {
       type: Number,
@@ -134,6 +136,10 @@ const tourSchema = new mongoose.Schema(
 tourSchema.index({ price: 1, ratingAverage: -1 });
 tourSchema.index({ slug: 1 });
 
+// geospatil index
+
+tourSchema.index({ startLocation: '2dsphere' });
+
 // VIRTUAL PROPERTIES
 tourSchema.virtual('durationWeek').get(function () {
   // here this points to the current docuemnt
@@ -174,17 +180,18 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.post(/^find/, function (docs, next) {
+tourSchema.post(/^find/, function (docs) {
   console.log(`The Query took ${Date.now() - this.start} milliseconds`);
-  next();
 });
 
-// AGGREGATE MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-  // exclude the secret tour from aggregate as well
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// // AGGREGATE MIDDLEWARE
+// tourSchema.pre('aggregate', function (next) {
+//   // exclude the secret tour from aggregate as well
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+
+//   console.log(this.pipeline());
+//   next();
+// });
 
 // model
 const Tour = mongoose.model('Tour', tourSchema);
