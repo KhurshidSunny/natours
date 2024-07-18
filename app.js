@@ -2,10 +2,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/order */
 /* eslint-disable prettier/prettier */
+const path = require('path');
 const morgan = require('morgan');
 const express = require('express');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -16,7 +18,15 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 
 const app = express();
-//  GLOBAL MIDDLEWARE
+
+// SETTING UP VIEW ENGINE
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// 1.  GLOBAL MIDDLEWARE
+
+// SERVING STATIC FILES
+app.use(express.static(path.join(__dirname, 'public')));
 
 // BODY PARSER ,READING DATA FROM THE BODY NOT req.body
 app.use(express.json({ limit: '10kb' }));
@@ -37,6 +47,9 @@ const rateLimiter = rateLimit({
 });
 app.use('/api', rateLimiter);
 
+// ROUTES
+
+app.use(`/`, viewRouter);
 app.use(`/api/v1/tours`, tourRouter);
 app.use(`/api/v1/users`, userRouter);
 app.use(`/api/v1/reviews`, reviewRouter);
