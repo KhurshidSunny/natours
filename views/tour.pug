@@ -1,8 +1,14 @@
 extends base
+
+block append head
+    //- script(src='/js/mapbox.js')
+    link(rel='stylesheet' href='https://unpkg.com/leaflet@1.7.1/dist/leaflet.css')
+    script(src='https://unpkg.com/leaflet@1.7.1/dist/leaflet.js')
+    meta(http-equiv='Content-Security-Policy' content="script-src 'self' https://unpkg.com;")
+
 include _reviewCard
 
             
-
 mixin overviewBox(label, text, icon)
     .overview-box__detail
         svg.overview-box__icon
@@ -72,8 +78,8 @@ block content
 
 
 
-    section.section-map
-        #map
+    //- section.section-map
+    //-     #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         .reviews

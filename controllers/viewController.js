@@ -26,7 +26,13 @@ exports.getTour = catchAsync(async (req, res, next) => {
 
   // 3) Rendering the data  using data from 1)
   res.status(200).render('tour', {
-    title: 'The Forest Hiker',
+    title: `${tour.name} Tour`,
     tour,
   });
 });
+
+exports.getLoginForm = (req, res) => {
+  res.status(200).render('login', {
+    title: 'Login to your account',
+  });
+};
