@@ -84,6 +84,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -221,5 +223,34 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // 4. Log the user in, send JWT
   createSendToken(res, user, 200);
+  next();
+});
+
+// Only for rendered pages, no errors
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  // 1. checking token and see if it's there
+  if (req.cookies.jwt) {
+    // 2. verification token
+    const decode = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET_KEY,
+    );
+
+    // 3. Check if the user exist
+    const currentUser = await User.findById(decode.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    // 4. check if the user changed the password
+    if (currentUser.changedPasswordAfter(decode.iat)) {
+      return next();
+    }
+
+    // THERE IS A LOGGED IN USER
+    res.locals.user = currentUser;
+    return next();
+  }
+
   next();
 });
