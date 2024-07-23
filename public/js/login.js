@@ -49,3 +49,30 @@ if (loginForm)
 
     login(email, password);
   });
+
+// LOGOUT FUNCTION
+async function logout() {
+  try {
+    const res = await fetch('http://127.0.0.1:3000/api/v1/users/logout', {
+      method: 'GET',
+      credentials: 'include', // Ensure cookies are sent
+    });
+
+    if (res.ok) {
+      location.reload(true);
+    } else {
+      const errorData = await res.json();
+      console.error('Logout failed:', errorData);
+      showAlert('error', 'Error logging out! Please try again');
+    }
+  } catch (err) {
+    console.error('Network error:', err);
+    showAlert('error', 'Error logging out! Please try again');
+  }
+}
+
+const logoutBtn = document.querySelector('.nav__el--logout');
+if (logoutBtn)
+  logoutBtn.addEventListener('click', () => {
+    logout();
+  });
