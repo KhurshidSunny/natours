@@ -75,6 +75,18 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(res, user, 200);
 });
 
+// logout controller
+exports.logout = async (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
@@ -95,6 +107,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2. verification token
+
+  // 2) Verification token
 
   const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
 
@@ -118,6 +132,8 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // GRANT ACCESS TO THE PROTECTED ROUTE
   req.user = currentUser;
+  res.locals.user = currentUser;
+
   next();
 });
 
@@ -227,30 +243,34 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 // Only for rendered pages, no errors
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   // 1. checking token and see if it's there
   if (req.cookies.jwt) {
-    // 2. verification token
-    const decode = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET_KEY,
-    );
+    try {
+      // 2. verification token
+      const decode = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET_KEY,
+      );
 
-    // 3. Check if the user exist
-    const currentUser = await User.findById(decode.id);
-    if (!currentUser) {
+      // 3. Check if the user exist
+      const currentUser = await User.findById(decode.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      // 4. check if the user changed the password
+      if (currentUser.changedPasswordAfter(decode.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
       return next();
     }
-
-    // 4. check if the user changed the password
-    if (currentUser.changedPasswordAfter(decode.iat)) {
-      return next();
-    }
-
-    // THERE IS A LOGGED IN USER
-    res.locals.user = currentUser;
-    return next();
   }
 
   next();
-});
+};
