@@ -106,7 +106,6 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 2. verification token
 
   // 2) Verification token
 
