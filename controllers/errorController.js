@@ -32,6 +32,7 @@ const handleJWTError = (err) => {
 
 const sendErrorDev = (err, req, res) => {
   // a) API
+  console.log(err);
   if (req.originalUrl.startsWith('/api')) {
     return res.status(err.statusCode).json({
       status: err.status,

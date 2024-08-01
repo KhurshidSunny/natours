@@ -2,12 +2,19 @@ doctype html
 html
     head
         block head
+            
             meta(charset='UTF-8')
             meta(name='viewport' content='width=device-width, initial-scale=1.0')
             link(rel='stylesheet' href='/css/style.css')
-            link(rel='shortcut icon' type='/image/png' href='img/favicon.png')
+            link(rel='shortcut icon' type='/image/png' href='/img/favicon.png')
             link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+            meta(http-equiv='Content-Security-Policy' content="script-src 'self' https://unpkg.com https://js.stripe.com;")
+
+           
+            
             title Natours | #{title}
+            
+            
 
 
     body
@@ -24,8 +31,14 @@ html
 
        
 
+       
+        script(src='https://js.stripe.com/v3/')
         script(src='/js/login.js')
         script(src='/js/updateSettings.js')
+        script(src='/js/stripe.js')
+        
+
+        
 
                 
             
