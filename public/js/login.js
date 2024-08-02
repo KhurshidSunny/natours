@@ -1,8 +1,4 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable node/no-unsupported-features/es-syntax */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-undef */
+/* eslint-disable */
 
 function hideAlert() {
   const el = document.querySelector('.alert');
@@ -18,7 +14,7 @@ function showAlert(type, msg) {
 
 async function login(email, password) {
   try {
-    const res = await fetch(`http://127.0.0.1:3000/api/v1/users/login`, {
+    const res = await fetch(`/api/v1/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

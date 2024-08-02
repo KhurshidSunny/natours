@@ -18,6 +18,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const app = express();
 
@@ -91,6 +92,9 @@ app.use(
     ],
   }),
 );
+
+// compression the response text
+app.use(compression());
 
 // golbal middleware error handler
 app.use(globalErrorHandler);
