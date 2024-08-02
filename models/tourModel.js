@@ -180,9 +180,10 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.post(/^find/, function (docs) {
-  console.log(`The Query took ${Date.now() - this.start} milliseconds`);
-});
+// test middleware
+// tourSchema.post(/^find/, function (docs) {
+//   console.log(`The Query took ${Date.now() - this.start} milliseconds`);
+// });
 
 // // AGGREGATE MIDDLEWARE
 // tourSchema.pre('aggregate', function (next) {

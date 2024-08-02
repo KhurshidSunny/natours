@@ -7,9 +7,7 @@ const stripe = Stripe(
 const bookTour = async (tourId) => {
   try {
     // 1: Get the checkout session from the API
-    const session = await fetch(
-      `http://127.0.0.1:3000/api/v1/bookings/checkout-session/${tourId}`,
-    );
+    const session = await fetch(`/api/v1/bookings/checkout-session/${tourId}`);
     const data = await session.json();
     // 2: Create checkout form + charge the debit card
     await stripe.redirectToCheckout({

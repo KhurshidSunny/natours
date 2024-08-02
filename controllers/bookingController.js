@@ -3,9 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const Tour = require('../models/tourModel');
 const BookingModel = require('../models/bookingModel');
-const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const factory = require('./handlerFactory');
 
 /* eslint-disable prettier/prettier */
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
